@@ -43,7 +43,7 @@ class MyHomePage extends StatelessWidget {
         subtitle: '演示 AnimatedContainer 动画的基本使用方法',
         widget: AnimatedContainerWidget()));
     _list.add(
-        ListModel(title: 'Coustom Widget', subtitle: '演示自定义动画的基本方法', widget: CustomViewWidget()));
+        ListModel(title: 'Coustom Widget', subtitle: '演示自定义组件的基本方法', widget: CustomViewWidget()));
   }
 
   @override

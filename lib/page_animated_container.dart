@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AnimatedContainerWidget extends StatefulWidget {
+class PageAnimatedContainer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return AnimatedContainerState();
+    return PageAnimatedContainerState();
   }
 }
 
-class AnimatedContainerState extends State<AnimatedContainerWidget> {
+class PageAnimatedContainerState extends State<PageAnimatedContainer> {
   // 定义视图宽高，颜色，圆角，和动画计数
   double _width = 50;
   double _height = 50;

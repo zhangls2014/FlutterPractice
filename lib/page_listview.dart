@@ -1,17 +1,60 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ListViewWidget extends StatelessWidget {
+class PageListViewWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return PageListViewState();
+  }
+}
+
+class PageListViewState extends State<PageListViewWidget> with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(vsync: this, length: 5);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('ListView Demo')),
-      body: _customScrollView,
+      appBar: AppBar(
+        title: Text('ListView 演示'),
+        bottom: TabBar(
+          tabs: <Widget>[
+            Tab(text: '构造函数'),
+            Tab(text: 'builder'),
+            Tab(text: 'separated'),
+            Tab(text: 'CustomScrollView'),
+            Tab(text: '滑动监听')
+          ],
+          controller: _tabController,
+          isScrollable: true,
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          _listConstructor,
+          _listBuilder,
+          _listViewSeparated,
+          _customScrollView,
+          ListViewControllerWidget()
+        ],
+      ),
     );
   }
 
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   // 简单的列表，用于数量很少的场景
-  final ListView _listTile = ListView(
+  final ListView _listConstructor = ListView(
     itemExtent: 50,
     children: <Widget>[
       ListTile(
@@ -33,7 +76,7 @@ class ListViewWidget extends StatelessWidget {
   );
 
   // 采用 builder 构建列表
-  final ListView _listView = ListView.builder(
+  final ListView _listBuilder = ListView.builder(
     itemCount: 20,
     itemBuilder: (BuildContext context, int index) => Column(
       children: <Widget>[
@@ -47,7 +90,7 @@ class ListViewWidget extends StatelessWidget {
   );
 
   // 采用 separated 构建列表
-  final ListView _listViewDivider = ListView.separated(
+  final ListView _listViewSeparated = ListView.separated(
       itemCount: 20,
       separatorBuilder: (BuildContext context, int index) => Divider(color: Colors.grey),
       itemBuilder: (BuildContext context, int index) => ListTile(
@@ -114,7 +157,6 @@ class ListViewControllerState extends State<ListViewControllerWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('ListView Demo')),
         floatingActionButton: _isTop
             ? FloatingActionButton(
                 child: Text('TOP'),

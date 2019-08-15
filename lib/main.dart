@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practice/page_unknown_route.dart';
 import 'package:practice/routes.dart';
 
 void main() => runApp(MyApp());
@@ -12,6 +13,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       initialRoute: Routes.PAGE_HOME,
+      onUnknownRoute: (RouteSettings settings) =>
+          MaterialPageRoute(builder: (context) => PageUnknownRoute()),
       routes: Routes.getRoutes(context),
     );
   }

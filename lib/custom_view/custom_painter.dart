@@ -32,13 +32,8 @@ class WheelPainter extends CustomPainter {
 
     Random random = Random();
     for (int i = 0; i < array.length; i++) {
-      canvas.drawArc(
-          boundRect,
-          i == 0 ? 0 : total[i - 1] * radius,
-          radius * array[i],
-          true,
-          getColorPaint(
-              Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1)));
+      canvas.drawArc(boundRect, i == 0 ? 0 : total[i - 1] * radius, radius * array[i], true,
+          getColorPaint(Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1)));
     }
   }
 

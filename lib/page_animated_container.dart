@@ -56,8 +56,7 @@ class PageAnimatedContainerState extends State<PageAnimatedContainer> {
             int _resultHeight = random.nextInt(6);
             _resultHeight = _resultHeight < 1 ? 1 : _resultHeight;
             _height = (_resultHeight * 50).toDouble();
-            _color =
-                Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
+            _color = Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
             _borderRadius = BorderRadius.circular(random.nextDouble() * 100);
             _clickCount++;
           });

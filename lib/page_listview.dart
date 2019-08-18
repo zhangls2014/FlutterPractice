@@ -161,8 +161,7 @@ class ListViewControllerState extends State<ListViewControllerWidget> {
             ? FloatingActionButton(
                 child: Text('TOP'),
                 onPressed: (() {
-                  _controller.animateTo(.0,
-                      duration: Duration(milliseconds: 200), curve: Curves.ease);
+                  _controller.animateTo(.0, duration: Duration(milliseconds: 200), curve: Curves.ease);
                 }),
               )
             : null,

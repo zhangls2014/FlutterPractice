@@ -9,17 +9,12 @@ class UpdateItemModel {
   String appDescription; //App 更新文案
   String appVersion; //App 版本
   // 构造函数语法糖，为属性赋值
-  UpdateItemModel(
-      {this.appIcon,
-      this.appName,
-      this.appSize,
-      this.appDate,
-      this.appDescription,
-      this.appVersion});
+  UpdateItemModel({this.appIcon, this.appName, this.appSize, this.appDate, this.appDescription, this.appVersion});
 }
 
 class UpdateItemWidget extends StatelessWidget {
   final UpdateItemModel model;
+
   UpdateItemWidget(this.model);
 
   @override
@@ -61,8 +56,7 @@ class UpdateItemWidget extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 8),
-                  child: Text(model.appDate,
-                      maxLines: 1, style: TextStyle(color: Colors.grey, fontSize: 14)),
+                  child: Text(model.appDate, maxLines: 1, style: TextStyle(color: Colors.grey, fontSize: 14)),
                 )
               ],
             ),

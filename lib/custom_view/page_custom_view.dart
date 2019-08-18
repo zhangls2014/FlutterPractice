@@ -49,10 +49,7 @@ class PageCustomViewState extends State<PageCustomView> with SingleTickerProvide
       appBar: AppBar(
         title: Text('组合控件演示'),
         bottom: TabBar(
-          tabs: <Widget>[
-            Tab(icon: Icon(Icons.system_update), text: "组合"),
-            Tab(icon: Icon(Icons.cake), text: "自绘")
-          ],
+          tabs: <Widget>[Tab(icon: Icon(Icons.system_update), text: "组合"), Tab(icon: Icon(Icons.cake), text: "自绘")],
           controller: _tabController,
         ),
       ),

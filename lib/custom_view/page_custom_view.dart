@@ -12,28 +12,11 @@ class PageCustomView extends StatefulWidget {
 }
 
 class PageCustomViewState extends State<PageCustomView> with SingleTickerProviderStateMixin {
-  final List<UpdateItemModel> _list = List();
   TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _list.add(UpdateItemModel(
-        appIcon: 'assets/ic_google_maps.webp',
-        appName: 'Google Maps - 为 Android 手机和平板电脑量身打造的 Google 地图',
-        appDate: '2019年6月9号',
-        appSize: "137.2",
-        appVersion: "Version 5.19",
-        appDescription:
-            'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
-    _list.add(UpdateItemModel(
-        appIcon: 'assets/ic_google_maps.webp',
-        appName: 'Google Maps - 为 Android 手机和平板电脑量身打造的 Google 地图',
-        appDate: '2019年6月9号',
-        appSize: "137.2",
-        appVersion: "Version 5.19",
-        appDescription:
-            'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
     _tabController = TabController(vsync: this, length: 2);
   }
 
@@ -55,16 +38,72 @@ class PageCustomViewState extends State<PageCustomView> with SingleTickerProvide
       ),
       body: TabBarView(
         controller: _tabController,
-        children: <Widget>[
-          ListView.separated(
-              itemBuilder: (BuildContext context, int index) => UpdateItemWidget(_list[index]),
-              separatorBuilder: (BuildContext context, int index) => Divider(),
-              itemCount: _list.length),
-          Center(
-            child: CakeWidget(),
-          )
-        ],
+        children: <Widget>[CombinationListWidget(), CustomPainterWidget()],
       ),
+    );
+  }
+}
+
+class CombinationListWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return CombinationListState();
+  }
+}
+
+class CombinationListState extends State<CombinationListWidget> with AutomaticKeepAliveClientMixin {
+  final List<UpdateItemModel> _list = List();
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _list.add(UpdateItemModel(
+        appIcon: 'assets/ic_google_maps.webp',
+        appName: 'Google Maps - 为 Android 手机和平板电脑量身打造的 Google 地图',
+        appDate: '2019年6月9号',
+        appSize: "137.2",
+        appVersion: "Version 5.19",
+        appDescription:
+        'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
+    _list.add(UpdateItemModel(
+        appIcon: 'assets/ic_google_maps.webp',
+        appName: 'Google Maps - 为 Android 手机和平板电脑量身打造的 Google 地图',
+        appDate: '2019年6月9号',
+        appSize: "137.2",
+        appVersion: "Version 5.19",
+        appDescription:
+        'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return ListView.separated(
+        itemBuilder: (BuildContext context, int index) => UpdateItemWidget(_list[index]),
+        separatorBuilder: (BuildContext context, int index) => Divider(),
+        itemCount: _list.length);
+  }
+}
+
+class CustomPainterWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return CustomPainterState();
+  }
+}
+
+class CustomPainterState extends State<CustomPainterWidget> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Center(
+      child: CakeWidget(),
     );
   }
 }

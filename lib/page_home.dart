@@ -20,6 +20,7 @@ class PageHomeWidget extends StatelessWidget {
         subtitle: '演示 AnimatedContainer 动画的基本使用方法',
         routeName: Routes.PAGE_ANIMATED_CONTAINER));
     _list.add(ListModel(title: 'Coustom Widget', subtitle: '演示自定义组件的基本方法', routeName: Routes.PAGE_CUSTOM_VIEW));
+    _list.add(ListModel(title: '天气信息展示', subtitle: '演示第三方网络框架 dio 的使用', routeName: Routes.PAGE_WEATHER));
   }
 
   @override

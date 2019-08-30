@@ -68,14 +68,6 @@ class CombinationListState extends State<CombinationListWidget> with AutomaticKe
         appVersion: "Version 5.19",
         appDescription:
             'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
-    _list.add(UpdateItemModel(
-        appIcon: 'assets/ic_google_maps.webp',
-        appName: 'Google Maps - 为 Android 手机和平板电脑量身打造的 Google 地图',
-        appDate: '2019年6月9号',
-        appSize: "137.2",
-        appVersion: "Version 5.19",
-        appDescription:
-            'Thanks for using Google Maps! This release brings bug fixes that improve our product to help you discover new places and navigate to them.'));
   }
 
   @override

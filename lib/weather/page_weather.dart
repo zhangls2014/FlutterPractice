@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/event.dart';
 import 'package:practice/weather/http/result_model.dart';
 import 'package:practice/weather/http/wather_api.dart';
+import 'package:practice/weather/model/daily_forecast_model.dart';
+import 'package:practice/weather/model/lifestyle_model.dart';
 import 'package:practice/weather/model/now_model.dart';
 import 'package:practice/weather/model/weather_model.dart';
 
@@ -22,7 +23,7 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 5);
+    _tabController = TabController(vsync: this, length: 3);
     _refreshSubscription = EventBusManager.instance.eventBus.on<_RefreshEvent>().listen((event) {
       getWeather(event.weatherType);
     });
@@ -46,14 +47,9 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
           return <Widget>[
             SliverAppBar(
               title: Text('天气预报'),
+              pinned: true,
               bottom: TabBar(
-                tabs: <Widget>[
-                  Tab(text: '实况天气'),
-                  Tab(text: '天气预报'),
-                  Tab(text: '逐小时预报'),
-                  Tab(text: '生活指数'),
-                  Tab(text: '生活指数预报')
-                ],
+                tabs: <Widget>[Tab(text: '实况天气'), Tab(text: '天气预报'), Tab(text: '生活指数')],
                 isScrollable: true,
                 controller: _tabController,
               ),
@@ -65,8 +61,6 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
           children: <Widget>[
             new WeatherItemWidget(WeatherType.now),
             new WeatherItemWidget(WeatherType.forecast),
-            new WeatherItemWidget(WeatherType.hourly),
-            new WeatherItemWidget(WeatherType.lifestyle),
             new WeatherItemWidget(WeatherType.lifestyle)
           ],
         ),
@@ -96,6 +90,8 @@ class WeatherItemWidget extends StatefulWidget {
 class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveClientMixin {
   StreamSubscription _weatherSubscription;
   NowModel _nowModel;
+  List<DailyForecastModel> _dailyForecastModel;
+  List<LifestyleModel> _lifestyleModel;
 
   @override
   bool get wantKeepAlive => true;
@@ -115,10 +111,16 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
           });
           break;
         case WeatherType.forecast:
+          setState(() {
+            _dailyForecastModel = event.weather.dailyForecast;
+          });
           break;
         case WeatherType.hourly:
           break;
         case WeatherType.lifestyle:
+          setState(() {
+            _lifestyleModel = event.weather.lifestyle;
+          });
           break;
       }
     });
@@ -136,7 +138,7 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     return RefreshIndicator(
       onRefresh: _doRefresh,
       child: ListView.separated(
-        separatorBuilder: (BuildContext context, int index) => Divider(),
+        separatorBuilder: (BuildContext context, int index) => Divider(height: 1),
         itemBuilder: (BuildContext context, int index) => getListItem(index),
         itemCount: getItemCount(),
       ),
@@ -148,20 +150,20 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     EventBusManager.instance.eventBus.fire(_RefreshEvent(widget._weatherType));
   }
 
-  ListTile getListItem(int index) {
-    ListTile item;
+  Widget getListItem(int index) {
+    Widget item;
     switch (widget._weatherType) {
       case WeatherType.now:
         item = getNowItem(index);
         break;
       case WeatherType.forecast:
-        item = getNowItem(index);
+        item = getDailyForestItem(index);
         break;
       case WeatherType.hourly:
         item = getNowItem(index);
         break;
       case WeatherType.lifestyle:
-        item = getNowItem(index);
+        item = getLifestyleItem(index);
         break;
     }
 
@@ -217,6 +219,112 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     return _listTile;
   }
 
+  Card getDailyForestItem(int index) {
+    final model = _dailyForecastModel[index];
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        physics: new NeverScrollableScrollPhysics(),
+        children: <Widget>[
+          ListTile(title: Text('预报日期：'), trailing: Text('${model?.date ?? 0}')),
+          ListTile(title: Text('日落时间：'), trailing: Text('${model?.ss ?? 0}')),
+          ListTile(title: Text('日出时间：'), trailing: Text('${model?.sr ?? 0}')),
+          ListTile(title: Text('最低温度：'), trailing: Text('${model?.tmpMin}摄氏度')),
+          ListTile(title: Text('最高温度：'), trailing: Text('${model?.tmpMax}摄氏度')),
+          ListTile(title: Text('相对湿度：'), trailing: Text('${model?.hum ?? 0}')),
+          ListTile(title: Text('能见度：'), trailing: Text('${model?.vis}公里')),
+          ListTile(title: Text('大气压强：'), trailing: Text('${model?.pres}')),
+          ListTile(title: Text('月升时间：'), trailing: Text('${model?.mr}')),
+          ListTile(title: Text('月落时间：'), trailing: Text('${model?.ms}')),
+          ListTile(title: Text('降水量：'), trailing: Text('${model?.pcpn}')),
+          ListTile(title: Text('降水概率：'), trailing: Text('${model?.pop}')),
+          ListTile(title: Text('风向：'), trailing: Text('${model?.windDir}')),
+          ListTile(title: Text('风力：'), trailing: Text('${model?.windSc}')),
+          ListTile(title: Text('风速：'), trailing: Text('${model?.windSpd}公里/小时')),
+          ListTile(title: Text('风向360角度：'), trailing: Text('${model?.windDeg}')),
+          ListTile(title: Text('紫外线强度指数：'), trailing: Text('${model?.uvIndex}')),
+          ListTile(title: Text('白天天气状况描述：'), trailing: Text('${model?.condTxtD}')),
+          ListTile(title: Text('白天天气状况代码：'), trailing: Text('${model?.condCodeD}')),
+          ListTile(title: Text('晚间天气状况描述：'), trailing: Text('${model?.condTxtN}')),
+          ListTile(title: Text('夜间天气状况代码：'), trailing: Text('${model?.condCodeN}'))
+        ],
+      ),
+    );
+  }
+
+  Card getLifestyleItem(int index) {
+    final model = _lifestyleModel[index];
+    return Card(
+      child: ListView(
+        shrinkWrap: true,
+        physics: new NeverScrollableScrollPhysics(),
+        children: <Widget>[
+          ListTile(title: Text('生活指数类型'), subtitle: Text(getLifestyleType(model.type)),),
+          ListTile(title: Text('生活指数简介'), subtitle: Text('${model?.brf ?? ''}'),),
+          ListTile(title: Text('生活指数详细描述'), subtitle: Text('${model?.txt ?? ''}'),)
+        ],
+      ),
+    );
+  }
+
+  String getLifestyleType(String type) {
+    String typeText;
+    switch (type) {
+      case 'comf':
+        typeText = '舒适度指数';
+        break;
+      case 'cw':
+        typeText = '洗车指数';
+        break;
+      case 'drsg':
+        typeText = '穿衣指数';
+        break;
+      case 'flu':
+        typeText = '感冒指数';
+        break;
+      case 'sport':
+        typeText = '运动指数';
+        break;
+      case 'trav':
+        typeText = '旅游指数';
+        break;
+      case 'uv':
+        typeText = '紫外线指数';
+        break;
+      case 'air':
+        typeText = '空气污染扩散条件指数';
+        break;
+      case 'ac':
+        typeText = '空调开启指数';
+        break;
+      case 'ag':
+        typeText = '过敏指数';
+        break;
+      case 'gl':
+        typeText = '太阳镜指数';
+        break;
+      case 'mu':
+        typeText = '化妆指数';
+        break;
+      case 'airc':
+        typeText = '晾晒指数';
+        break;
+      case 'ptfc':
+        typeText = '交通指数';
+        break;
+      case 'fsh':
+        typeText = '钓鱼指数';
+        break;
+      case 'spi':
+        typeText = '防晒指数';
+        break;
+      default:
+        typeText = '';
+        break;
+    }
+    return typeText;
+  }
+
   int getItemCount() {
     int itemCount;
     switch (widget._weatherType) {
@@ -224,13 +332,13 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
         itemCount = 13;
         break;
       case WeatherType.forecast:
-        itemCount = 0;
+        itemCount = _dailyForecastModel?.length ?? 0;
         break;
       case WeatherType.hourly:
         itemCount = 0;
         break;
       case WeatherType.lifestyle:
-        itemCount = 0;
+        itemCount = _lifestyleModel?.length ?? 0;
         break;
     }
 

@@ -38,7 +38,7 @@ class PageHomeWidget extends StatelessWidget {
               onTap: () => Navigator.pushNamed(context, _list[index].routeName),
             );
           },
-          separatorBuilder: (BuildContext context, int index) => Divider(),
+          separatorBuilder: (BuildContext context, int index) => Divider(height: 1),
           itemCount: _list.length),
     );
   }

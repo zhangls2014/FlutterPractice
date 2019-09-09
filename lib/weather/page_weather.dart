@@ -21,38 +21,11 @@ class PageWeatherWidget extends StatefulWidget {
 
 class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProviderStateMixin {
   TabController _tabController;
-  StreamSubscription _refreshSubscription;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 3);
-    _refreshSubscription = EventBusManager.instance.eventBus.on<_RefreshEvent>().listen((event) {
-      getWeather(event.weatherType);
-    });
-
-    getWeather(WeatherType.now);
-  }
-
-  void getWeather(WeatherType type) async {
-    var api = new WeatherApi();
-    ResultModel resultModel = await api.getWeather(type, "成都");
-    if (resultModel.success) {
-      HeWeather6 model = resultModel.data.heWeather6[0];
-      switch (type) {
-        case WeatherType.now:
-          EventBusManager.instance.eventBus.fire(NowEvent(model.now));
-          break;
-        case WeatherType.forecast:
-          EventBusManager.instance.eventBus.fire(DailyForecastEvent(model.dailyForecast));
-          break;
-        case WeatherType.hourly:
-          break;
-        case WeatherType.lifestyle:
-          EventBusManager.instance.eventBus.fire(LifestyleEvent(model.lifestyle));
-          break;
-      }
-    }
   }
 
   @override
@@ -75,9 +48,9 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            new WeatherItemWidget(WeatherType.now),
-            new WeatherItemWidget(WeatherType.forecast),
-            new WeatherItemWidget(WeatherType.lifestyle)
+            WeatherItemWidget(WeatherType.now),
+            WeatherItemWidget(WeatherType.forecast),
+            WeatherItemWidget(WeatherType.lifestyle)
           ],
         ),
       ),
@@ -87,7 +60,6 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
   @override
   void dispose() {
     _tabController.dispose();
-    _refreshSubscription.cancel();
     super.dispose();
   }
 }
@@ -171,7 +143,26 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
 
   // 发送刷新通知，等待返回结果
   Future<void> _doRefresh() async {
-    EventBusManager.instance.eventBus.fire(_RefreshEvent(widget._weatherType));
+    return Future(() async {
+      var api = new WeatherApi();
+      ResultModel resultModel = await api.getWeather(widget._weatherType, "成都");
+      if (resultModel.success) {
+        HeWeather6 model = resultModel.data.heWeather6[0];
+        switch (widget._weatherType) {
+          case WeatherType.now:
+            EventBusManager.instance.eventBus.fire(NowEvent(model.now));
+            break;
+          case WeatherType.forecast:
+            EventBusManager.instance.eventBus.fire(DailyForecastEvent(model.dailyForecast));
+            break;
+          case WeatherType.hourly:
+            break;
+          case WeatherType.lifestyle:
+            EventBusManager.instance.eventBus.fire(LifestyleEvent(model.lifestyle));
+            break;
+        }
+      }
+    });
   }
 
   Widget getListItem(int index) {
@@ -379,11 +370,4 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
 
     return itemCount;
   }
-}
-
-// 刷新通知
-class _RefreshEvent {
-  final WeatherType weatherType;
-
-  _RefreshEvent(this.weatherType);
 }

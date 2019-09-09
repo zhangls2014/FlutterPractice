@@ -75,7 +75,7 @@ class CombinationListState extends State<CombinationListWidget> with AutomaticKe
     super.build(context);
     return ListView.separated(
         itemBuilder: (BuildContext context, int index) => UpdateItemWidget(_list[index]),
-        separatorBuilder: (BuildContext context, int index) => Divider(),
+        separatorBuilder: (BuildContext context, int index) => Divider(height: 1),
         itemCount: _list.length);
   }
 }

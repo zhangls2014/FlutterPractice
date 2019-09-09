@@ -1,3 +1,3 @@
 class Config {
-  static const bool DEBUG = true;
+  static const bool DEBUG = false;
 }

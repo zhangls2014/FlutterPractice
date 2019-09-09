@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:practice/event.dart';
+import 'package:practice/weather/event/daily_forecast_event.dart';
+import 'package:practice/weather/event/lifestyle_event.dart';
+import 'package:practice/weather/event/now_event.dart';
 import 'package:practice/weather/http/result_model.dart';
 import 'package:practice/weather/http/wather_api.dart';
 import 'package:practice/weather/model/daily_forecast_model.dart';
@@ -35,7 +38,20 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
     var api = new WeatherApi();
     ResultModel resultModel = await api.getWeather(type, "成都");
     if (resultModel.success) {
-      EventBusManager.instance.eventBus.fire(_WeatherEvent(resultModel.data.heWeather6[0]));
+      HeWeather6 model = resultModel.data.heWeather6[0];
+      switch (type) {
+        case WeatherType.now:
+          EventBusManager.instance.eventBus.fire(NowEvent(model.now));
+          break;
+        case WeatherType.forecast:
+          EventBusManager.instance.eventBus.fire(DailyForecastEvent(model.dailyForecast));
+          break;
+        case WeatherType.hourly:
+          break;
+        case WeatherType.lifestyle:
+          EventBusManager.instance.eventBus.fire(LifestyleEvent(model.lifestyle));
+          break;
+      }
     }
   }
 
@@ -102,28 +118,34 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     // 第一次加载页面，刷新数据
     _doRefresh();
     // 订阅 Event 事件
-    _weatherSubscription = EventBusManager.instance.eventBus.on<_WeatherEvent>().listen((event) {
-      // 收到新的数据，刷新界面
-      switch (widget._weatherType) {
-        case WeatherType.now:
+    switch (widget._weatherType) {
+      case WeatherType.now:
+        _weatherSubscription = EventBusManager.instance.eventBus.on<NowEvent>().listen((event) {
+          // 收到新的数据，刷新界面
           setState(() {
-            _nowModel = event.weather.now;
+            _nowModel = event.now;
           });
-          break;
-        case WeatherType.forecast:
+        });
+        break;
+      case WeatherType.forecast:
+        _weatherSubscription = EventBusManager.instance.eventBus.on<DailyForecastEvent>().listen((event) {
+          // 收到新的数据，刷新界面
           setState(() {
-            _dailyForecastModel = event.weather.dailyForecast;
+            _dailyForecastModel = event.dailyForecast;
           });
-          break;
-        case WeatherType.hourly:
-          break;
-        case WeatherType.lifestyle:
+        });
+        break;
+      case WeatherType.hourly:
+        break;
+      case WeatherType.lifestyle:
+        _weatherSubscription = EventBusManager.instance.eventBus.on<LifestyleEvent>().listen((event) {
+          // 收到新的数据，刷新界面
           setState(() {
-            _lifestyleModel = event.weather.lifestyle;
+            _lifestyleModel = event.lifestyle;
           });
-          break;
-      }
-    });
+        });
+        break;
+    }
   }
 
   @override
@@ -138,6 +160,8 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     return RefreshIndicator(
       onRefresh: _doRefresh,
       child: ListView.separated(
+        padding: EdgeInsets.only(top: 0),
+        shrinkWrap: true,
         separatorBuilder: (BuildContext context, int index) => Divider(height: 1),
         itemBuilder: (BuildContext context, int index) => getListItem(index),
         itemCount: getItemCount(),
@@ -224,6 +248,7 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     return Card(
       child: ListView(
         shrinkWrap: true,
+        padding: EdgeInsets.only(top: 0),
         physics: new NeverScrollableScrollPhysics(),
         children: <Widget>[
           ListTile(title: Text('预报日期：'), trailing: Text('${model?.date ?? 0}')),
@@ -256,12 +281,22 @@ class WeatherItemState extends State<WeatherItemWidget> with AutomaticKeepAliveC
     final model = _lifestyleModel[index];
     return Card(
       child: ListView(
+        padding: EdgeInsets.only(top: 0),
         shrinkWrap: true,
         physics: new NeverScrollableScrollPhysics(),
         children: <Widget>[
-          ListTile(title: Text('生活指数类型'), subtitle: Text(getLifestyleType(model.type)),),
-          ListTile(title: Text('生活指数简介'), subtitle: Text('${model?.brf ?? ''}'),),
-          ListTile(title: Text('生活指数详细描述'), subtitle: Text('${model?.txt ?? ''}'),)
+          ListTile(
+            title: Text('生活指数类型'),
+            subtitle: Text(getLifestyleType(model.type)),
+          ),
+          ListTile(
+            title: Text('生活指数简介'),
+            subtitle: Text('${model?.brf ?? ''}'),
+          ),
+          ListTile(
+            title: Text('生活指数详细描述'),
+            subtitle: Text('${model?.txt ?? ''}'),
+          )
         ],
       ),
     );
@@ -351,11 +386,4 @@ class _RefreshEvent {
   final WeatherType weatherType;
 
   _RefreshEvent(this.weatherType);
-}
-
-// 获取数据
-class _WeatherEvent {
-  final HeWeather6 weather;
-
-  _WeatherEvent(this.weather);
 }

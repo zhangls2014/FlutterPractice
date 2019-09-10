@@ -31,28 +31,21 @@ class PageWeatherState extends State<PageWeatherWidget> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              title: Text('天气预报'),
-              pinned: true,
-              bottom: TabBar(
-                tabs: <Widget>[Tab(text: '实况天气'), Tab(text: '天气预报'), Tab(text: '生活指数')],
-                isScrollable: true,
-                controller: _tabController,
-              ),
-            )
-          ];
-        },
-        body: TabBarView(
+      appBar: AppBar(
+        title: Text('天气预报'),
+        bottom: TabBar(
+          tabs: <Widget>[Tab(text: '实况天气'), Tab(text: '天气预报'), Tab(text: '生活指数')],
+          isScrollable: true,
           controller: _tabController,
-          children: <Widget>[
-            WeatherItemWidget(WeatherType.now),
-            WeatherItemWidget(WeatherType.forecast),
-            WeatherItemWidget(WeatherType.lifestyle)
-          ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          WeatherItemWidget(WeatherType.now),
+          WeatherItemWidget(WeatherType.forecast),
+          WeatherItemWidget(WeatherType.lifestyle)
+        ],
       ),
     );
   }
